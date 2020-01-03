@@ -1,0 +1,50 @@
+body {
+    color: #acacac;
+}
+
+.btn {
+    color: #383838;
+}
+
+.page-title {
+    padding-bottom: 10px;
+}
+
+.content-bg {
+    background-color: #2D132C;
+    min-height: 100vh;
+}
+
+.menu-bg {
+    background-color: #801336;
+}
+
+.button-bg {
+    background-color: #C72C41;
+}
+
+.header-font {
+    color: #EE4540;
+    text-align: center;
+}
+
+.menu-box {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 10px;
+    /* border-radius: 15px; */
+}
+
+.main-page-content {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.navbar-button {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.navbar-nav > li > .dropdown-menu a:hover {
+    background-color: #EE4540;
+}
