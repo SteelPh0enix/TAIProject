@@ -1,9 +1,5 @@
 {% extends "bootstrap_base.html" %}
 
-{% block head %}
-<title>{% block title %}{% endblock title %}</title>
-{% endblock head %}
-
 {% block body %}
 <div class="container-fluid content-bg">
     <nav class="navbar navbar-expand menu-bg">
@@ -25,19 +21,7 @@
             </li>
         </ul>
     </nav>
-    <div class="row">
-        <div class="col">
-            <div class="main-page-content">
-            <div class="page-title">
-                <h1 class="display-1 header-font">Spectrogen</h1>
-            </div>
-                {% block content %}{% endblock content %}
-            </div>
-        </div>
-        <div class="col-2">
-            <div class="menu-box menu-bg">
-                {% lorem %}
-            </div>
-        </div>
+
+   {% block content %}{% endblock content %} 
 </div>
 {% endblock body %}

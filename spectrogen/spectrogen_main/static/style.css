@@ -32,7 +32,7 @@ body {
     margin-top: 15px;
     margin-bottom: 15px;
     padding: 10px;
-    /* border-radius: 15px; */
+    border-radius: 5px;
 }
 
 .main-page-content {
@@ -47,4 +47,15 @@ body {
 
 .navbar-nav > li > .dropdown-menu a:hover {
     background-color: #EE4540;
+}
+
+.navbar {
+    border-radius: 5px;
+}
+
+.alert-danger {
+    color: #300a16;
+    background-color: #c41e53;
+    border-color: #c41e53;
+    margin-top: 1rem;
 }
