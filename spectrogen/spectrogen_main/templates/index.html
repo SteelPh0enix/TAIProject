@@ -34,8 +34,23 @@
             {% endfor %}
 
             <div class="form-group">
-                <button type="submit" class="btn button-bg">Login</button>
+                <button type="submit" class="btn button-bg"><b>Login</b></button>
+                <a href="/register/" class="btn button-bg align-right">Register</a>
             </div>
         </form>
     {% endif %}
 {% endblock menucontent %}
+
+{% block pagecontent %}
+    {% if error_popup_message %}
+        <div class="alert alert-danger" role="alert">
+            {{ error_popup_message }}
+        </div>
+    {% endif %} 
+
+    {% if info_popup_message %}
+        <div class="alert alert-primary" role="alert">
+            {{ info_popup_message }}
+        </div>
+    {% endif %}
+{% endblock pagecontent %}

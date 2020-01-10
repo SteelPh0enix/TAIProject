@@ -59,3 +59,12 @@ body {
     border-color: #c41e53;
     margin-top: 1rem;
 }
+
+.align-right {
+    float: right;
+    clear: right;
+}
+
+.width-50 {
+    width: 50%
+}
