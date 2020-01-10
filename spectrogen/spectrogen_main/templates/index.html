@@ -1,5 +1,7 @@
 {% extends "main_base.html" %}
 
+{% load widget_tweaks %}
+
 {% block menucontent %}
     {% if user.is_authenticated %}
         <div class="user-data">
@@ -9,22 +11,31 @@
     {% else %}
         <form action="/login/" method="post">
             {% csrf_token %}
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="username" aria-describedby="usernameHelp" placeholder="Enter username">
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-            </div>
-            <input type="hidden" name="next" value="{{ request.path }}">
-            <button type="submit" class="btn button-bg">Login</button>
-        </form>
+            {% for hidden_field in login_form.hidden_fields %}
+                {{ hidden_field }}
+            {% endfor %}
 
-        {% if login_failure %}
-            <div class="alert alert-danger" role="alert">
-                Wrong login credentials!
+            {% if login_form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {% for error in login_form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% for field in login_form.visible_fields %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field|add_class:'form-control' }}
+                    {% for error in field.errors %}
+                        <span class="help-block">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <div class="form-group">
+                <button type="submit" class="btn button-bg">Login</button>
             </div>
-        {% endif %}
+        </form>
     {% endif %}
 {% endblock menucontent %}
