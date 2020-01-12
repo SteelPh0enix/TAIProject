@@ -8,5 +8,7 @@ class Spectrogram(models.Model):
     title = models.CharField(max_length=100)
     image_filename = models.FilePathField(path=settings.SPECTROGRAMS_DIR)
     video_url = models.URLField()
+    timeframe_start = models.IntegerField()
+    timeframe_end = models.IntegerField()
     date_added = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(get_user_model(), models.CASCADE)

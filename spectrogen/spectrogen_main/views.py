@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-
+from . import forms
 
 # Create your views here.
 
@@ -43,8 +43,11 @@ def register_user(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            print("welp, done")
             return index_with_info(request, 'User registered successfully, you may now log in.')
     else:
         form = UserCreationForm()
     return render(request, 'register.html', {'form': form})
+
+def add_spectrogram(request):
+
+    return render(request, 'add_spectrogram.html', {'form': forms.SpectrogramForm()})
