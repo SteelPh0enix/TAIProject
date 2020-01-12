@@ -1,10 +1,13 @@
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.core.files.base import ContentFile
 from django.conf import settings
-from . import forms
+
 import os
 
+from . import forms, spectrogen
 # Create your views here.
 
 
@@ -67,11 +70,20 @@ def add_spectrogram(request):
             if spectrogram.timeframe_end is None:
                 spectrogram.timeframe_end = -1
 
-            print(os.listdir(settings.MEDIA_ROOT))
-            spectrogram.image_file_path = settings.MEDIA_ROOT + '/test.png'
-            print("Spectrogram path: {0}".format(spectrogram.image_file_path))
+            try:
+                spectrogram_bytes, filename = spectrogen.create_spectrogram_from_video(
+                    spectrogram.video_url, spectrogram.timeframe_start, spectrogram.timeframe_end)
+            except:
+                return render(request, 'add_spectrogram.html', {'form': form, 'error_popup_message': 'There was an error while creating the spectrogram!'})
+
+            if os.path.exists(settings.MEDIA_ROOT + '/spectrograms/' + filename):
+                return render(request, 'add_spectrogram.html', {'form': form, 'error_popup_message': 'Spectrogram already exists!'})
+
+            spectrogram.image_file.save(filename, ContentFile(
+                spectrogram_bytes.read()), save=False)
+
             spectrogram.save()
-            index_with_info(request, 'Spectrogram addedd successfully!')
+            return index_with_info(request, 'Spectrogram addedd successfully!')
     else:
         form = forms.SpectrogramForm()
     return render(request, 'add_spectrogram.html', {'form': form})

@@ -2,6 +2,7 @@ from pydub import AudioSegment
 import matplotlib.pyplot as plt
 import numpy as np
 import youtube_dl as ydl
+from io import BytesIO
 import os
 
 
@@ -45,7 +46,7 @@ def extract_raw_audio(input_filename: str, start: int = 0, end: int = -1):
     return (samples, frequency)
 
 
-def generate_spectrogram(data, frequency: int, output_filename: str) -> None:
+def generate_spectrogram(data, frequency: int) -> BytesIO:
     """Generated spectrogram from raw data"""
     figure, axis = plt.subplots(1)
 
@@ -59,23 +60,27 @@ def generate_spectrogram(data, frequency: int, output_filename: str) -> None:
 
     axis.axis('off')
     figure.set_size_inches(15, 8, forward=True)
-    figure.savefig(output_filename, dpi=100, facecolor=None, transparent=True)
+    output_buffer = BytesIO()
 
+    figure.savefig(output_buffer, dpi=100, facecolor=None, transparent=True)
+    output_buffer.seek(0)
+    return output_buffer
 
-def create_spectrogram_from_video(url: str, output_dir: str, start: int = 0, end: int = -1,
-                                  temp_cache_dir: str = './tempcache') -> str:
+def generate_spectrogram_filename(audio_file_path: str, start: int, end: int) -> str:
+    base_name = os.path.basename(audio_file_path)
+    name_without_ext = base_name[:base_name.rindex('.')]
+
+    return name_without_ext + 's' + str(start) + 'e' + str(end) + '.png'
+
+def create_spectrogram_from_video(url: str, start: int = 0, end: int = -1,
+                                  temp_cache_dir: str = './tempcache'):
     """Creates spectrogram from YouTube video and returns it's filename"""
     audio_file = download_audio(url, temp_cache_dir)
 
     raw_audio, audio_frequency = extract_raw_audio(audio_file, start, end)
 
-    spectrogram_file = output_dir + '/' + os.path.basename(replace_extension(audio_file, 'png'))
-
-    if not os.path.exists(os.path.dirname(spectrogram_file)):
-        os.mkdir(os.path.dirname(spectrogram_file))
-
-    generate_spectrogram(raw_audio, audio_frequency, spectrogram_file)
+    spectrogram_bytes = generate_spectrogram(raw_audio, audio_frequency)
 
     os.remove(audio_file)
 
-    return spectrogram_file
+    return spectrogram_bytes, generate_spectrogram_filename(audio_file, start, end)

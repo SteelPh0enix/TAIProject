@@ -4,7 +4,14 @@
 
 {% block content %}
 <div class="container-sm w-50">
-    <h1>Register new account</h1>
+    <h1>Add spectrogram</h1>
+
+    {% if error_popup_message %}
+        <div class="alert alert-danger" role="alert">
+            {{ error_popup_message }}
+        </div>
+    {% endif %} 
+
     <form action="/add_spectrogram/" method="post">
         {% csrf_token %}
         {% for hidden_field in form.hidden_fields %}
