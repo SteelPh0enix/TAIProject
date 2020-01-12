@@ -6,9 +6,9 @@ from django.contrib.auth import get_user_model
 
 class Spectrogram(models.Model):
     title = models.CharField(max_length=100)
-    image_filename = models.FilePathField(path=settings.SPECTROGRAMS_DIR)
+    image_file_path = models.FilePathField(allow_files=True, allow_folders=False, default=settings.MEDIA_ROOT)
     video_url = models.URLField()
-    timeframe_start = models.IntegerField()
-    timeframe_end = models.IntegerField()
+    timeframe_start = models.IntegerField(default=0)
+    timeframe_end = models.IntegerField(default=-1)
     date_added = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(get_user_model(), models.CASCADE)

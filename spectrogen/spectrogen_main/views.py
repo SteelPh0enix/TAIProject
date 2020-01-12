@@ -1,13 +1,17 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.conf import settings
 from . import forms
+import os
 
 # Create your views here.
+
 
 def index_with_error(request, error_message):
     return render(request, 'index.html', {'login_form': AuthenticationForm(),
                                           'error_popup_message': error_message})
+
 
 def index_with_info(request, info_message):
     return render(request, 'index.html', {'login_form': AuthenticationForm(),
@@ -48,6 +52,26 @@ def register_user(request):
         form = UserCreationForm()
     return render(request, 'register.html', {'form': form})
 
-def add_spectrogram(request):
 
-    return render(request, 'add_spectrogram.html', {'form': forms.SpectrogramForm()})
+def add_spectrogram(request):
+    if request.method == 'POST':
+        form = forms.SpectrogramForm(request.POST)
+        if form.is_valid():
+            spectrogram = form.save(commit=False)
+
+            spectrogram.author = request.user
+
+            if spectrogram.timeframe_start is None:
+                spectrogram.timeframe_start = 0
+
+            if spectrogram.timeframe_end is None:
+                spectrogram.timeframe_end = -1
+
+            print(os.listdir(settings.MEDIA_ROOT))
+            spectrogram.image_file_path = settings.MEDIA_ROOT + '/test.png'
+            print("Spectrogram path: {0}".format(spectrogram.image_file_path))
+            spectrogram.save()
+            index_with_info(request, 'Spectrogram addedd successfully!')
+    else:
+        form = forms.SpectrogramForm()
+    return render(request, 'add_spectrogram.html', {'form': form})

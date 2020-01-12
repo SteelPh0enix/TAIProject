@@ -121,4 +121,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-SPECTROGRAMS_DIR = '/static/spectrograms'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'spectrogen_main', 'media')
+MEDIA_URL = '/media/'
