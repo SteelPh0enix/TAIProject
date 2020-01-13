@@ -1,40 +1,64 @@
-{% extends "simple_base.html" %}
-
-{% load widget_tweaks %}
-
-{% block content %}
+{% extends "simple_base.html" %} {% load widget_tweaks %} {% block content %}
 <div class="container-sm w-50">
     <h1>Add spectrogram</h1>
 
     {% if error_popup_message %}
-        <div class="alert alert-danger" role="alert">
-            {{ error_popup_message }}
-        </div>
-    {% endif %} 
+    <div class="alert alert-danger" role="alert">
+        {{ error_popup_message }}
+    </div>
+    {% endif %}
 
     <form action="/add_spectrogram/" method="post">
         {% csrf_token %}
+        
         {% for hidden_field in form.hidden_fields %}
             {{ hidden_field }}
         {% endfor %}
-
+        
         {% if form.non_field_errors %}
             <div class="alert alert-danger" role="alert">
                 {% for error in form.non_field_errors %}
                     {{ error }}
                 {% endfor %}
-            </div> 
+            </div>
         {% endif %}
 
-        {% for field in form.visible_fields %}
-            <div class="form-group">
-                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {{ field|add_class:'form-control' }}
-                {% for error in field.errors %}
-                    <span class="help-block">{{ error }}</span>
-                {% endfor %}
+        <div class="form-group">
+            <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+            {{ form.title|add_class:'form-control' }}
+                {% for error in form.title.errors %}
+                <span class="help-block">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.video_url.id_for_label }}">{{ form.video_url.label }}</label>
+            {{ form.video_url|add_class:'form-control' }}
+            {% for error in form.video_url.errors %}
+                <span class="help-block">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="{{ form.timeframe_start.id_for_label }}">{{ form.timeframe_start.label }}</label>
+                    {{ form.timeframe_start|add_class:'form-control' }}
+                    {% for error in form.timeframe_start.errors %}
+                        <span class="help-block">{{ error }}</span>
+                    {% endfor %}
+                </div>
             </div>
-        {% endfor %}
+            <div class="col">
+                <div class="form-group">
+                    <label for="{{ form.timeframe_end.id_for_label }}">{{ form.timeframe_end.label }}</label>
+                    {{ form.timeframe_end|add_class:'form-control' }}
+                    {% for error in form.timeframe_end.errors %}
+                        <span class="help-block">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
 
         <div class="form-group">
             <button type="submit" class="btn button-bg">Generate and add spectrogram!</button>

@@ -4,23 +4,28 @@ import numpy as np
 import youtube_dl as ydl
 import os
 
+YOUTUBE_DL_OPTIONS = {
+    'format': 'bestaudio',
+    'outtmpl': output_dir + '/%(id)s.%(ext)s',
+    'postprocessors': [{
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': 'mp3',
+    }],
+}
+
 
 def replace_extension(filename: str, new_ext: str) -> str:
     return filename[:filename.rindex('.')] + '.' + new_ext
 
+def get_video_metadata(url: str):
+    with ydl.YoutubeDL(YOUTUBE_DL_OPTIONS) as downloader:
+        return downloader.extract_info(url, download=False)
+
 
 def download_audio(url: str, output_dir: str) -> str:
     """Downloads audio from YouTube"""
-    ydl_options = {
-        'format': 'bestaudio',
-        'outtmpl': output_dir + '/%(id)s.%(ext)s',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-        }],
-    }
 
-    with ydl.YoutubeDL(ydl_options) as downloader:
+    with ydl.YoutubeDL(YOUTUBE_DL_OPTIONS) as downloader:
         video_info = downloader.extract_info(url, download=True)
         filename = downloader.prepare_filename(video_info)
 
@@ -69,7 +74,8 @@ def create_spectrogram_from_video(url: str, output_dir: str, start: int = 0, end
 
     raw_audio, audio_frequency = extract_raw_audio(audio_file, start, end)
 
-    spectrogram_file = output_dir + '/' + os.path.basename(replace_extension(audio_file, 'png'))
+    spectrogram_file = output_dir + '/' + \
+        os.path.basename(replace_extension(audio_file, 'png'))
 
     if not os.path.exists(os.path.dirname(spectrogram_file)):
         os.mkdir(os.path.dirname(spectrogram_file))
