@@ -26,6 +26,9 @@ def index(request):
 
 
 def login_user(request):
+    if request.user.is_authenticated:
+        return index_with_error(request, 'You are already logged in!')
+
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():

@@ -9,10 +9,13 @@ import os
 def replace_extension(filename: str, new_ext: str) -> str:
     return filename[:filename.rindex('.')] + '.' + new_ext
 
+def get_video_metadata(url: str):
+    with ydl.YoutubeDL() as downloader:
+        return downloader.extract_info(url, download=False)
 
 def download_audio(url: str, output_dir: str) -> str:
     """Downloads audio from YouTube"""
-    ydl_options = {
+    YOUTUBE_DL_OPTIONS = {
         'format': 'bestaudio',
         'outtmpl': output_dir + '/%(id)s.%(ext)s',
         'postprocessors': [{
@@ -21,7 +24,7 @@ def download_audio(url: str, output_dir: str) -> str:
         }],
     }
 
-    with ydl.YoutubeDL(ydl_options) as downloader:
+    with ydl.YoutubeDL(YOUTUBE_DL_OPTIONS) as downloader:
         video_info = downloader.extract_info(url, download=True)
         filename = downloader.prepare_filename(video_info)
 
