@@ -22,7 +22,7 @@ def index_with_info(request, info_message):
 
 
 def index(request):
-    return render(request, 'index.html', {'login_form': AuthenticationForm()})
+    return render(request, 'simple_base.html', {'login_form': AuthenticationForm()})
 
 
 def login_user(request):

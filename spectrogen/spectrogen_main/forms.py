@@ -40,5 +40,8 @@ class SpectrogramForm(forms.ModelForm):
         if time_max - time_min <= 1024:
             raise forms.ValidationError("Timeframe period must be greater than 1024 milliseconds!")
 
+        if time_max - time_min > 100000:
+            raise forms.ValidationError("Timeframe period can't be longer than 100 seconds!")
+
         if time_max > duration_ms:
             raise forms.ValidationError("Timeframe can't be longer than video, nor outside of it! (video length: {0}ms)".format(duration_ms))
