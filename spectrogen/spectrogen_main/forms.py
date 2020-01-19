@@ -8,7 +8,7 @@ class SpectrogramForm(forms.ModelForm):
     timeframe_end = forms.IntegerField(required=False, min_value=1024)
 
     def __init__(self, *args, **kwargs):
-        super(forms.ModelForm, self).__init__(*args, **kwargs)
+        super(SpectrogramForm, self).__init__(*args, **kwargs)
         self.fields['timeframe_start'].label = 'Timeframe start (ms)'
         self.fields['timeframe_end'].label = 'Timeframe end (ms)'
 
@@ -36,12 +36,12 @@ class SpectrogramForm(forms.ModelForm):
 
         if time_min > time_max:
             raise forms.ValidationError("End of timeframe must occur before the beginning!")
-            
+
         if time_max - time_min <= 1024:
             raise forms.ValidationError("Timeframe period must be greater than 1024 milliseconds!")
 
         if time_max - time_min > 100000:
-            raise forms.ValidationError("Timeframe period can't be longer than 100 seconds!")
+            raise forms.ValidationError("Timeframe period can't be longer than 100 seconds! (video length: {0}ms)".format(duration_ms))
 
         if time_max > duration_ms:
             raise forms.ValidationError("Timeframe can't be longer than video, nor outside of it! (video length: {0}ms)".format(duration_ms))

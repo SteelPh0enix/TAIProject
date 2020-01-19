@@ -65,6 +65,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'builtins': [
+                'spectrogen_main.templatetags.ms_to_time',
+            ]
         },
     },
 ]

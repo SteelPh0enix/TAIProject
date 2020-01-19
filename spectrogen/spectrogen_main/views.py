@@ -1,28 +1,29 @@
-
+import os
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.files.base import ContentFile
 from django.conf import settings
 
-import os
-
-from . import forms, spectrogen
+from . import forms, spectrogen, models
 # Create your views here.
 
 
 def index_with_error(request, error_message):
-    return render(request, 'index.html', {'login_form': AuthenticationForm(),
-                                          'error_popup_message': error_message})
+    return index(request, {'error_popup_message': error_message})
 
 
 def index_with_info(request, info_message):
-    return render(request, 'index.html', {'login_form': AuthenticationForm(),
-                                          'info_popup_message': info_message})
+    return index(request, {'info_popup_message': info_message})
 
 
-def index(request):
-    return render(request, 'simple_base.html', {'login_form': AuthenticationForm()})
+def index(request, additional_context=None):
+    list_of_spectrograms = models.Spectrogram.objects.all().order_by('-date_added')
+    context = {'login_form': AuthenticationForm(), 'spectrogram_list': list_of_spectrograms}
+    if additional_context is not None:
+        context.update(dict(additional_context))
+    
+    return render(request, 'index.html', context=context)
 
 
 def login_user(request):
@@ -34,10 +35,9 @@ def login_user(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('/')
+        return index(request, {'login_form': form})
     else:
-        form = AuthenticationForm()
-    return render(request, 'index.html', {'login_form': form})
+        return index(request)
 
 
 def logout_user(request):

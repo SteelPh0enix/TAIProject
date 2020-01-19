@@ -68,3 +68,22 @@ body {
 .width-50 {
     width: 50%
 }
+
+.spectrum-container {
+    width: 95%;
+    padding: 20px 5% 20px 5%;
+    margin: 0 auto;
+}
+
+.spectrum-info {
+    font-family: 'Roboto Mono', monospace;
+}
+
+.spectrum-title {
+    font-weight: bold;
+    font-size: 30px;
+}
+
+.spectrum-additional-info {
+    font-size: small;
+}

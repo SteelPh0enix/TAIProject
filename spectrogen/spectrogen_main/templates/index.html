@@ -1,6 +1,7 @@
 {% extends "main_base.html" %}
 
 {% load widget_tweaks %}
+{% load ms_to_time %}
 
 {% block menucontent %}
     {% if user.is_authenticated %}
@@ -52,5 +53,23 @@
         <div class="alert alert-primary" role="alert">
             {{ info_popup_message }}
         </div>
+    {% endif %}
+
+    {% if spectrogram_list %}
+        {% for spectrum in spectrogram_list %}
+            <div class="spectrum-container">
+                <div class="spectrum-info">
+                    <div class="spectrum-main-info">
+                        <span class="spectrum-title">{{ spectrum.title }}</span> by {{ spectrum.author.username }}
+                    </div>
+                    <div class="spectrum-additional-info">
+                        Generated {{ spectrum.date_added }} from <a href="{{ spectrum.video_url }}&t={{ spectrum.timeframe_start|mstosec }}">{{ spectrum.video_url }}</a> (from {{ spectrum.timeframe_start|mstotime }} to {{ spectrum.timeframe_end|mstotime }})
+                    </div>
+                </div>
+                <div class="spectrum-image-container">
+                    <img src="/media/{{ spectrum.image_file }}" class="img-fluid rounded">
+                </div>
+            </div>
+        {% endfor %}
     {% endif %}
 {% endblock pagecontent %}
