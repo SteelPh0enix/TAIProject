@@ -55,15 +55,20 @@
         </div>
     {% endif %}
 
-    {% if spectrogram_list %}
-        {% for spectrum in spectrogram_list %}
+    {% if spectrogram_data %}
+        {% for spectrum, votes_info in spectrogram_data %}
             <div class="spectrum-container">
-                <div class="spectrum-info">
-                    <div class="spectrum-main-info">
-                        <span class="spectrum-title">{{ spectrum.title }}</span> by {{ spectrum.author.username }}
+                <div class="row ">
+                    <div class="spectrum-info col-md-auto">
+                        <div class="spectrum-main-info">
+                            <span class="spectrum-title">{{ spectrum.title }}</span> by {{ spectrum.author.username }}
+                        </div>
+                        <div class="spectrum-additional-info">
+                            Generated {{ spectrum.date_added }} from <a href="{{ spectrum.video_url }}&t={{ spectrum.timeframe_start|mstosec }}">{{ spectrum.video_url }}</a> (from {{ spectrum.timeframe_start|mstotime }} to {{ spectrum.timeframe_end|mstotime }})
+                        </div>
                     </div>
-                    <div class="spectrum-additional-info">
-                        Generated {{ spectrum.date_added }} from <a href="{{ spectrum.video_url }}&t={{ spectrum.timeframe_start|mstosec }}">{{ spectrum.video_url }}</a> (from {{ spectrum.timeframe_start|mstotime }} to {{ spectrum.timeframe_end|mstotime }})
+                    <div class="col-md-auto ml-auto align-content-center" id="fav-btn-{{ spectrum.id }}-container">
+                        <button id="fav-btn-{{ spectrum.id }}" onclick="toggle_vote({{ spectrum.id }});" class="spectrum-fav btn button-bg {% if votes_info.user_voted %}spectrum-fav-used{% endif %}">&#9733; {{ votes_info.votes }}</button>
                     </div>
                 </div>
                 <div class="spectrum-image-container">

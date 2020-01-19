@@ -4,6 +4,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.files.base import ContentFile
 from django.conf import settings
+from django.http import JsonResponse, HttpResponse
 
 from . import forms, spectrogen, models
 # Create your views here.
@@ -19,10 +20,29 @@ def index_with_info(request, info_message):
 
 def index(request, additional_context=None):
     list_of_spectrograms = models.Spectrogram.objects.all().order_by('-date_added')
-    context = {'login_form': AuthenticationForm(), 'spectrogram_list': list_of_spectrograms}
+    votes_data = []
+
+    for spectrogram in list_of_spectrograms:
+        vote_data = {}
+        if request.user.is_authenticated:
+            try:
+                models.SpectrogramVote.objects.get(
+                    spectrogram=spectrogram, user=request.user)
+                vote_data['user_voted'] = True
+            except models.SpectrogramVote.DoesNotExist:
+                vote_data['user_voted'] = False
+
+        vote_data['votes'] = models.SpectrogramVote.objects.filter(
+            spectrogram=spectrogram).count()
+
+        votes_data.append(vote_data)
+
+    context = {'login_form': AuthenticationForm(
+    ), 'spectrogram_data': zip(list_of_spectrograms, votes_data)}
+
     if additional_context is not None:
         context.update(dict(additional_context))
-    
+
     return render(request, 'index.html', context=context)
 
 
@@ -60,6 +80,9 @@ def register_user(request):
 
 
 def add_spectrogram(request):
+    if not request.user.is_authenticated:
+        return index_with_error(request, 'You must log in before adding spectrogram!')
+
     if request.method == 'POST':
         form = forms.SpectrogramForm(request.POST)
         if form.is_valid():
@@ -90,3 +113,31 @@ def add_spectrogram(request):
     else:
         form = forms.SpectrogramForm()
     return render(request, 'add_spectrogram.html', {'form': form})
+
+
+def spectrogram_toggle_fav(request, id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'reason': 'User is not logged in!'})
+
+    try:
+        spectrogram = models.Spectrogram.objects.get(id=id)
+    except models.Spectrogram.DoesNotExist:
+        return JsonResponse({'status': 'error', 'reason': 'Requested spectrogram does not exist!'})
+
+    try:
+        models.SpectrogramVote.objects.get(
+            spectrogram=spectrogram, user=request.user).delete()
+    except models.SpectrogramVote.DoesNotExist:
+        models.SpectrogramVote(spectrogram=spectrogram,
+                               user=request.user).save()
+
+    return JsonResponse({'status': 'OK', 'reason': 'Vote changed successfully!'})
+
+def get_spectrogram_votes(request, id):
+    try:
+        spectrogram = models.Spectrogram.objects.get(id=id)
+    except models.Spectrogram.DoesNotExist:
+        return HttpResponse(status=204)
+
+    votes = models.SpectrogramVote.objects.filter(spectrogram=spectrogram).count()
+    return JsonResponse({'id': id, 'votes': votes})

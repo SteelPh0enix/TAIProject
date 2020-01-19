@@ -11,3 +11,7 @@ class Spectrogram(models.Model):
     timeframe_end = models.IntegerField(default=-1)
     date_added = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(get_user_model(), models.CASCADE)
+
+class SpectrogramVote(models.Model):
+    spectrogram = models.ForeignKey(Spectrogram, models.CASCADE)
+    user = models.ForeignKey(get_user_model(), models.CASCADE)

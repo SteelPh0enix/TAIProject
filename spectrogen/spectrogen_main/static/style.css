@@ -87,3 +87,12 @@ body {
 .spectrum-additional-info {
     font-size: small;
 }
+
+.spectrum-fav {
+    margin-top: 15px;
+    margin-right: 5px;
+}
+
+.spectrum-fav-used {
+    background-color: #8230ee;
+}
