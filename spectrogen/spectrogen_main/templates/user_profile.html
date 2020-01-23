@@ -1,0 +1,49 @@
+{% extends "main_base.html" %}
+
+{% load widget_tweaks %}
+{% block menucontent %}
+    {% if user.is_authenticated %}
+        <div class="user-data">
+            <p>Logged in as {{ user.get_username }}</p>
+        </div>
+        <a class="btn button-bg" href="/logout/">Log out</a>
+    {% endif %}
+{% endblock menucontent %}
+
+{% block pagecontent %}
+<h2 class="text-center">User settings</h2>
+    <form action="/user" method="post">
+    {% csrf_token %}
+        {% for hidden_field in user_edit_form.hidden_fields %}
+            {{ hidden_field }}
+        {% endfor %}
+
+
+        {% if user_edit_form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+                {% for error in user_edit_form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %} 
+
+        {% for field in user_edit_form.visible_fields %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field|add_class:'form-control' }}
+                {% for error in field.errors %}
+                    <span class="help-block">{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="form-group">
+            <button type="submit" class="btn button-bg">Save changes</button>
+        </div>
+    </form>
+<h2 class="text-center">Spectrograms</h2>
+
+{% for spectrogram in spectrograms %}
+    <div>{{ spectrogram.title }}</div>
+{% endfor %}
+{% endblock pagecontent %}

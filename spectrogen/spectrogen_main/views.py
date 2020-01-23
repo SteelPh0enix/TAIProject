@@ -1,7 +1,7 @@
 import os
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth import login, logout, update_session_auth_hash
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordChangeForm
 from django.core.files.base import ContentFile
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
@@ -141,3 +141,37 @@ def get_spectrogram_votes(request, id):
 
     votes = models.SpectrogramVote.objects.filter(spectrogram=spectrogram).count()
     return JsonResponse({'id': id, 'votes': votes})
+
+def edit_spectrogram(request, id):
+    if not request.user.is_authenticated:
+        return index_with_error(request, 'You have to log in in order to edit spectrograms.')
+
+    try:
+        spectrogram = models.Spectrogram.objects.get(id=id)
+    except models.Spectrogram.DoesNotExist:
+        return index_with_error(request, 'Spectrogram you want to edit does not exist!')
+
+    # This should be done using permissions system, but i'll leave it like that for now
+    if spectrogram.author != request.user and request.user.username != 'admin':
+        return index_with_error(request, "You don't have permissions to edit this spectrogram!")
+
+    if request.type == 'POST':
+        pass
+    else:
+        return render(request, 'edit_spectrogram.html')
+
+def view_user_profile(request):
+    if not request.user.is_authenticated:
+        return index_with_error(request, 'You have to log in to see your profile.')
+
+    user_spectrograms = models.Spectrogram.objects.filter(author=request.user)
+
+    if request.method == 'POST':
+        user_edit_form = PasswordChangeForm(request.user, request.POST)
+        if user_edit_form.is_valid():
+            user = user_edit_form.save()
+            update_session_auth_hash(request, user)
+    else:
+        user_edit_form = PasswordChangeForm(request.user)
+
+    return render(request, 'user_profile.html', {'spectrograms': user_spectrograms, 'user_edit_form': user_edit_form})

@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from . import models
 
 from .spectrogen import get_video_metadata
@@ -45,3 +46,4 @@ class SpectrogramForm(forms.ModelForm):
 
         if time_max > duration_ms:
             raise forms.ValidationError("Timeframe can't be longer than video, nor outside of it! (video length: {0}ms)".format(duration_ms))
+

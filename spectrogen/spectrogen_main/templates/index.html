@@ -8,7 +8,8 @@
         <div class="user-data">
             <p>Logged in as {{ user.get_username }}</p>
         </div>
-        <a class="btn button-bg" href="/logout/">Log out</a>
+        <a class="btn button-bg" href="/logout">Log out</a>
+        <a class="btn button-bg" href="/user">Account</a>
     {% else %}
         <form action="/login/" method="post">
             {% csrf_token %}
