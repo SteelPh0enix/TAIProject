@@ -96,3 +96,8 @@ body {
 .spectrum-fav-used {
     background-color: #8230ee;
 }
+
+.userpanel-btn {
+    margin-left: 5px;
+    margin-right: 5px;
+}

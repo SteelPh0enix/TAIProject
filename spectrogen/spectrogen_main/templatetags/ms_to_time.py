@@ -3,9 +3,9 @@ register = template.Library()
 
 @register.filter()
 def mstotime(milliseconds):
-    seconds = int(milliseconds / 1000)
-    minutes = int(seconds / 60)
-    hours = int(minutes / 60)
+    seconds = int(int(milliseconds) / 1000)
+    minutes = int(int(seconds) / 60)
+    hours = int(int(minutes) / 60)
 
     final_time_string = str(seconds) + 's'
     if minutes > 0:

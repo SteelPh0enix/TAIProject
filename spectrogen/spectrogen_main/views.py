@@ -155,7 +155,7 @@ def edit_spectrogram(request, id):
     if spectrogram.author != request.user and request.user.username != 'admin':
         return index_with_error(request, "You don't have permissions to edit this spectrogram!")
 
-    if request.type == 'POST':
+    if request.method == 'POST':
         pass
     else:
         return render(request, 'edit_spectrogram.html')
@@ -164,7 +164,13 @@ def view_user_profile(request):
     if not request.user.is_authenticated:
         return index_with_error(request, 'You have to log in to see your profile.')
 
-    user_spectrograms = models.Spectrogram.objects.filter(author=request.user)
+    list_of_spectrograms = models.Spectrogram.objects.filter(author=request.user).order_by('-date_added')
+    votes = list()
+
+    for spectrogram in list_of_spectrograms:
+        votes.append(models.SpectrogramVote.objects.filter(
+            spectrogram=spectrogram).count())
+
 
     if request.method == 'POST':
         user_edit_form = PasswordChangeForm(request.user, request.POST)
@@ -174,4 +180,20 @@ def view_user_profile(request):
     else:
         user_edit_form = PasswordChangeForm(request.user)
 
-    return render(request, 'user_profile.html', {'spectrograms': user_spectrograms, 'user_edit_form': user_edit_form})
+    return render(request, 'user_profile.html', {'spectrograms_data': zip(list_of_spectrograms, votes), 'user_edit_form': user_edit_form})
+
+def delete_spectrogram(request, id):
+    if not request.user.is_authenticated:
+        return index_with_error(request, 'You have to log in to delete spectrograms!')
+
+    try:
+        spectrogram = models.Spectrogram.objects.get(id=id)
+    except models.Spectrogram.DoesNotExist:
+        return index_with_error(request, 'Spectrogram you want to delete does not exist!')
+
+    # This should be done using permissions system, but i'll leave it like that for now
+    if spectrogram.author != request.user and request.user.username != 'admin':
+        return index_with_error(request, "You don't have permissions to delete this spectrogram!")
+
+    spectrogram.delete()
+    return JsonResponse({'id': id, 'status': 'deleted'})

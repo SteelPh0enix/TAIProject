@@ -1,6 +1,8 @@
 {% extends "main_base.html" %}
 
 {% load widget_tweaks %}
+{% load ms_to_time %}
+
 {% block menucontent %}
     {% if user.is_authenticated %}
         <div class="user-data">
@@ -43,7 +45,32 @@
     </form>
 <h2 class="text-center">Spectrograms</h2>
 
-{% for spectrogram in spectrograms %}
-    <div>{{ spectrogram.title }}</div>
-{% endfor %}
+{% if spectrograms_data %}
+    <div class="spectrogram-user-view">
+        <table class="table table-dark">
+            <thead>
+                <th scope="col">Preview</th>
+                <th scope="col">Title</th>
+                <th scope="col">Added</th>
+                <th scope="col">YouTube URL</th>
+                <th scope="col">Audio timestamps</th>
+                <th scope="col">Stars</th>
+                <th scope="col">Action</th>
+            </thead>
+            <tbody>
+                {% for spectrogram, votes in spectrograms_data %}
+                    <tr>
+                        <td><a href="/media/{{ spectrogram.image_file }}"><img src="/media/{{ spectrogram.image_file }}" height="50" width="100"></a></td>
+                        <td>{{ spectrogram.title }}</td>
+                        <td>{{ spectrogram.date_added }}</td>
+                        <td><a href="{{ spectrogram.video_url }}&t={{ spectrogram.timeframe_start|mstosec }}">{{ spectrogram.video_url }}</a></td>
+                        <td>From {{ spectrogram.timeframe_start|mstotime }} to {{ spectrogram.timeframe_end|mstotime }}</td>
+                        <td>{{ votes }}</td>
+                        <td><a href="/spectrogram/{{ spectrogram.id }}/edit" class="btn button-bg userpanel-btn">Edit</a><a href="/spectrogram/{{ spectrogram.id }}/delete" class="btn button-bg userpanel-btn">Delete</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
 {% endblock pagecontent %}
