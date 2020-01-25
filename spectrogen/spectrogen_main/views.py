@@ -184,16 +184,16 @@ def view_user_profile(request):
 
 def delete_spectrogram(request, id):
     if not request.user.is_authenticated:
-        return index_with_error(request, 'You have to log in to delete spectrograms!')
+        return JsonResponse({'id': id, 'status': 'error', 'reason': 'You are not logged in!'})
 
     try:
         spectrogram = models.Spectrogram.objects.get(id=id)
     except models.Spectrogram.DoesNotExist:
-        return index_with_error(request, 'Spectrogram you want to delete does not exist!')
+        return JsonResponse({'id': id, 'status': 'error', 'reason': 'Spectrogram you want to remove does not exist!'})
 
     # This should be done using permissions system, but i'll leave it like that for now
     if spectrogram.author != request.user and request.user.username != 'admin':
-        return index_with_error(request, "You don't have permissions to delete this spectrogram!")
+        return JsonResponse({'id': id, 'status': 'error', 'reason': 'You are not permitted to delete this spectrogram!'})
 
     spectrogram.delete()
     return JsonResponse({'id': id, 'status': 'deleted'})
