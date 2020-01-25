@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
-    'spectrogen_main'
+    'spectrogen_main',
+    'django_cleanup',
 ]
 
 MIDDLEWARE = [
