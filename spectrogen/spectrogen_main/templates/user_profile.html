@@ -66,11 +66,45 @@
                         <td><a href="{{ spectrogram.video_url }}&t={{ spectrogram.timeframe_start|mstosec }}">{{ spectrogram.video_url }}</a></td>
                         <td>From {{ spectrogram.timeframe_start|mstotime }} to {{ spectrogram.timeframe_end|mstotime }}</td>
                         <td>{{ votes }}</td>
-                        <td><a href="/spectrogram/{{ spectrogram.id }}/edit" class="btn button-bg userpanel-btn">Edit</a><a href="/spectrogram/{{ spectrogram.id }}/delete" class="btn button-bg userpanel-btn">Delete</a></td>
+                        <td>
+                            <a href="/spectrogram/{{ spectrogram.id }}/edit" class="btn button-bg userpanel-btn">Edit</a>
+                            <!-- <a href="/spectrogram/{{ spectrogram.id }}/delete" class="btn button-bg userpanel-btn">Delete</a> -->
+                            <button type="button" class="btn button-bg userpanel-btn" data-toggle="modal" data-target="#deleteSpectrogramModal" data-spectrogram-id="{{ spectrogram.id }}" data-spectrogramtitle="{{ spectrogram.title }}">Delete</button>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 {% endif %}
+
+<div class="modal fade" id="deleteSpectrogramModal" tabindex="-1" role="dialog" aria-labelledby="deleteSpectrogramModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteSpectrogramModalLabel">Delete spectrogram</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="delete-warning">Are you sure you want to delete spectrogram &quot;<span id="spectrogram-title"></span>&quot;?</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn button-bg" data-dismiss="modal">No</button>
+                <button type="button" class="btn button-bg" id="spectrogram-delete-btn" action="#">Yes, delete it</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$('#deleteSpectrogramModal').on('show.bs.modal', function(event) {
+    let button = $(event.relatedTarget)
+    let spectrogram_id = button.data('spectrogram-id')
+    let spectrogram_title = button.data('spectrogramtitle')
+    let modal = $(this)
+
+    modal.find('.modal-body #spectrogram-title').text(spectrogram_title)
+    modal.find('.modal-footer #spectrogram-delete-btn').attr('onclick', `delete_spectrogram(${spectrogram_id});`)
+})
+</script>
 {% endblock pagecontent %}

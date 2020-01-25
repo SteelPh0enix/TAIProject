@@ -131,7 +131,7 @@ def spectrogram_toggle_fav(request, id):
         models.SpectrogramVote(spectrogram=spectrogram,
                                user=request.user).save()
 
-    return JsonResponse({'status': 'OK', 'reason': 'Vote changed successfully!'})
+    return JsonResponse({'status': 'OK'})
 
 def get_spectrogram_votes(request, id):
     try:
@@ -196,4 +196,4 @@ def delete_spectrogram(request, id):
         return JsonResponse({'id': id, 'status': 'error', 'reason': 'You are not permitted to delete this spectrogram!'})
 
     spectrogram.delete()
-    return JsonResponse({'id': id, 'status': 'deleted'})
+    return JsonResponse({'id': id, 'status': 'OK'})

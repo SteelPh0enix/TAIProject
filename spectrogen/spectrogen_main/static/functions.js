@@ -16,9 +16,21 @@ function toggle_vote(id) {
         .then(response => response.json())
         .then(data => {
             if (data['status'] === 'OK') {
-                toggle_vote_button(id)
+                toggle_vote_button(id);
             } else {
-
+                alert(`Something went wrong while changing a vote: ${data['reason']}`)
             }
         });
+}
+
+function delete_spectrogram(id) {
+    fetch(`/spectrogram/${id}/delete`)
+    .then(response => response.json())
+    .then(data => {
+        if (data['status'] === 'OK') {
+            location.reload();
+        } else {
+            alert(`Something went wrong while deleting spectrogram: ${data['reason']}`);
+        }
+    });
 }
