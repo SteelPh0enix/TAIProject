@@ -67,8 +67,7 @@
                         <td>From {{ spectrogram.timeframe_start|mstotime }} to {{ spectrogram.timeframe_end|mstotime }}</td>
                         <td>{{ votes }}</td>
                         <td>
-                            <a href="/spectrogram/{{ spectrogram.id }}/edit" class="btn button-bg userpanel-btn">Edit</a>
-                            <!-- <a href="/spectrogram/{{ spectrogram.id }}/delete" class="btn button-bg userpanel-btn">Delete</a> -->
+                            <button type="button" class="btn button-bg userpanel-btn" data-toggle="modal" data-target="#editSpectrogramModal" data-spectrogram-id="{{ spectrogram.id }}" data-spectrogramtitle="{{ spectrogram.title }}">Edit</button>
                             <button type="button" class="btn button-bg userpanel-btn" data-toggle="modal" data-target="#deleteSpectrogramModal" data-spectrogram-id="{{ spectrogram.id }}" data-spectrogramtitle="{{ spectrogram.title }}">Delete</button>
                         </td>
                     </tr>
@@ -90,7 +89,28 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn button-bg" data-dismiss="modal">No</button>
-                <button type="button" class="btn button-bg" id="spectrogram-delete-btn" action="#">Yes, delete it</a>
+                <button type="button" class="btn button-bg" id="spectrogram-delete-btn" action="#">Yes, delete it</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editSpectrogramModal" tabindex="-1" role="dialog" aria-labelledby="editSpectrogramModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editSpectrogramModalLabel">Edit spectrogram</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newSpectrogramTitle" class="form-control">New title:</label>
+                    <input id="newSpectrogramTitle" name="newSpectrogramTitle"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn button-bg" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn button-bg" id="spectrogram-edit-btn" action="#">Apply edits</button>
             </div>
         </div>
     </div>
@@ -105,6 +125,16 @@ $('#deleteSpectrogramModal').on('show.bs.modal', function(event) {
 
     modal.find('.modal-body #spectrogram-title').text(spectrogram_title)
     modal.find('.modal-footer #spectrogram-delete-btn').attr('onclick', `delete_spectrogram(${spectrogram_id});`)
+})
+
+$('#editSpectrogramModal').on('show.bs.modal', function(event) {
+    let button = $(event.relatedTarget)
+    let spectrogram_id = button.data('spectrogram-id')
+    let spectrogram_title = button.data('spectrogramtitle')
+    let modal = $(this)
+
+    modal.find('.modal-body #newSpectrogramTitle').val(spectrogram_title)
+    modal.find('.modal-footer #spectrogram-edit-btn').attr('onclick', `edit_spectrogram(${spectrogram_id}, document.getElementById('newSpectrogramTitle').value);`)
 })
 </script>
 {% endblock pagecontent %}

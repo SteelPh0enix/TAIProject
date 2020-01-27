@@ -47,3 +47,6 @@ class SpectrogramForm(forms.ModelForm):
         if time_max > duration_ms:
             raise forms.ValidationError("Timeframe can't be longer than video, nor outside of it! (video length: {0}ms)".format(duration_ms))
 
+class SpectrogramEditForm(forms.ModelForm):
+    class Meta:
+        fields = ['title']

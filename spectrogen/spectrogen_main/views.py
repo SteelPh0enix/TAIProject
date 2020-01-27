@@ -1,4 +1,5 @@
 import os
+import json
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordChangeForm
@@ -144,21 +145,23 @@ def get_spectrogram_votes(request, id):
 
 def edit_spectrogram(request, id):
     if not request.user.is_authenticated:
-        return index_with_error(request, 'You have to log in in order to edit spectrograms.')
+        return JsonResponse({'id': id, 'status': 'error', 'reason': 'You need to be logged in in order to edit spectrogram'})
 
     try:
         spectrogram = models.Spectrogram.objects.get(id=id)
     except models.Spectrogram.DoesNotExist:
-        return index_with_error(request, 'Spectrogram you want to edit does not exist!')
+        return JsonResponse({'id': id, 'status': 'error', 'reason': 'Spectrogram you want to edit does not exist'})
 
     # This should be done using permissions system, but i'll leave it like that for now
     if spectrogram.author != request.user and request.user.username != 'admin':
-        return index_with_error(request, "You don't have permissions to edit this spectrogram!")
+        return JsonResponse({'id': id, 'status': 'error', 'reason': 'You don\'t have permissions to edit this spectrogram!'})
 
     if request.method == 'POST':
-        pass
+        edit_form = forms.SpectrogramEditForm(request.POST, instance=spectrogram)
+        if edit_form.is_valid():
+            return JsonResponse({'id': id, 'status': 'OK'})
     else:
-        return render(request, 'edit_spectrogram.html')
+        return JsonResponse({'id': id, 'status': 'none'})
 
 def view_user_profile(request):
     if not request.user.is_authenticated:
@@ -197,3 +200,28 @@ def delete_spectrogram(request, id):
 
     spectrogram.delete()
     return JsonResponse({'id': id, 'status': 'OK'})
+
+def edit_spectrogram_json(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'id': id, 'status': 'error', 'reason': 'You need to be logged in in order to edit spectrogram'})
+
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+
+        spectrogram_id = json_data.get('id', '-1')
+        spectrogram_title = json_data.get('title', '')
+
+        try:
+            spectrogram = models.Spectrogram.objects.get(id=spectrogram_id)
+        except models.Spectrogram.DoesNotExist:
+            return JsonResponse({'id': spectrogram_id, 'status': 'error', 'reason': 'Spectrogram you want to edit does not exist'})
+
+        # This should be done using permissions system, but i'll leave it like that for now
+        if spectrogram.author != request.user and request.user.username != 'admin':
+            return JsonResponse({'id': spectrogram_id, 'status': 'error', 'reason': 'You don\'t have permissions to edit this spectrogram!'})
+
+        spectrogram.title = spectrogram_title
+        spectrogram.save()
+        return JsonResponse({'id': spectrogram_id, 'status': 'OK'})
+    else:
+        return JsonResponse({'status': 'error', 'reason': 'No data included in request'})
