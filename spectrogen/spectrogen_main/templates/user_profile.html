@@ -103,10 +103,12 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label for="newSpectrogramTitle" class="form-control">New title:</label>
-                    <input id="newSpectrogramTitle" name="newSpectrogramTitle"/>
-                </div>
+                <form id="spectrogram-edit-form" name="spectrogram-edit-form" onsubmit="#">
+                    <div class="form-group">
+                        <label for="newSpectrogramTitle" class="col-form-label">New title:</label>
+                        <input type="text" class="form-control" id="newSpectrogramTitle" name="newSpectrogramTitle"/>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn button-bg" data-dismiss="modal">Cancel</button>
@@ -134,6 +136,7 @@ $('#editSpectrogramModal').on('show.bs.modal', function(event) {
     let modal = $(this)
 
     modal.find('.modal-body #newSpectrogramTitle').val(spectrogram_title)
+    modal.find('.modal-body #spectrogram-edit-form').attr('onsubmit', `edit_spectrogram(${spectrogram_id}, document.getElementById('newSpectrogramTitle').value);`)
     modal.find('.modal-footer #spectrogram-edit-btn').attr('onclick', `edit_spectrogram(${spectrogram_id}, document.getElementById('newSpectrogramTitle').value);`)
 })
 </script>

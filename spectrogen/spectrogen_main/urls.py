@@ -16,4 +16,5 @@ urlpatterns = [
     path('spectrogram/<int:id>/delete', views.delete_spectrogram, name='delete_spectrogram'),
     path('user', views.view_user_profile, name='view_user_profile'),
     path('spectrogram/edit', views.edit_spectrogram_json, name='edit_spectrogram_json'),
+    path('top', views.top_spectrums, name="top_spectrums"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -19,8 +19,8 @@ def index_with_info(request, info_message):
     return index(request, {'info_popup_message': info_message})
 
 
-def index(request, additional_context=None):
-    list_of_spectrograms = models.Spectrogram.objects.all().order_by('-date_added')
+def index(request, additional_context=None, sort_by='-date_added'):
+    list_of_spectrograms = models.Spectrogram.objects.all().order_by(sort_by)
     votes_data = []
 
     for spectrogram in list_of_spectrograms:
@@ -44,6 +44,31 @@ def index(request, additional_context=None):
     if additional_context is not None:
         context.update(dict(additional_context))
 
+    return render(request, 'index.html', context=context)
+
+def top_spectrums(request):
+    list_of_spectrograms = models.Spectrogram.objects.all()
+    list_of_votes = []
+
+
+    for spectrogram in list_of_spectrograms:
+        vote_data = {}
+        if request.user.is_authenticated:
+            try:
+                models.SpectrogramVote.objects.get(
+                    spectrogram=spectrogram, user=request.user)
+                vote_data['user_voted'] = True
+            except models.SpectrogramVote.DoesNotExist:
+                vote_data['user_voted'] = False
+
+        vote_data['votes'] = models.SpectrogramVote.objects.filter(
+            spectrogram=spectrogram).count()
+
+        list_of_votes.append(vote_data)
+
+    final_list = sorted(list(zip(list_of_spectrograms, list_of_votes)), key = lambda x: x[1]['votes'], reverse=True)
+
+    context = {'login_form': AuthenticationForm(), 'spectrogram_data': final_list}
     return render(request, 'index.html', context=context)
 
 
