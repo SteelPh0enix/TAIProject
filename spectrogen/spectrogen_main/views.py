@@ -250,3 +250,15 @@ def edit_spectrogram_json(request):
         return JsonResponse({'id': spectrogram_id, 'status': 'OK'})
     else:
         return JsonResponse({'status': 'error', 'reason': 'No data included in request'})
+
+def delete_account(request):
+    if not request.user.is_authenticated:
+        return index_with_error(request, 'To delete your account, you must first log in!')
+
+    if request.user.username == 'admin':
+        return index_with_error(request, 'Admin account cannot be deleted!')
+
+    request.user.is_active = False
+    request.user.save()
+
+    return index_with_info(request, 'Account successfully deleted.')
